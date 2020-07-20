@@ -1,5 +1,40 @@
 :root {
+  --rootGridRows: 10;
+  --rootGridCols: 10;
   --oxoLineWidth: 0.5%;
+}
+
+body {
+  margin: 3px;
+  background-color: whitesmoke;
+}
+
+svg {
+  height: 100%;
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+}
+
+.griditem {
+  min-width: 0;
+  min-height: 0;
+}
+
+.grid.root {
+  min-height: 99vh;
+  min-width: 99vw;
+  height: 99vh;
+  width: 100%;
+  grid-template-rows: repeat(var(--rootGridRows), 1fr);
+  grid-template-columns: repeat(var(--rootGridCols), 1fr);
+}
+
+.griditem.oxo {
+  grid-row: 1 / span var(--rootGridRows);
+  grid-column: 1/ span var(--rootGridCols);
 }
 
 .oxo > .svg > .picker > .text {
