@@ -171,6 +171,8 @@ export class OXO{
     } else if (ACTION == ACTIONS.EXIT_GAME) {
       //Wipe game data
       GAME_DATA.set(this, undefined);
+      //Remove event listeners
+      stripEventListener(this, DATA.board.length);
       if (DATA.callbackOnExit) {
         //Execute callback if it exists
         DATA.callbackOnExit();
@@ -209,7 +211,7 @@ export class OXO{
       //Check the board state for a winner
       let winner = checkBoardState(DATA.board, PLAYERS, ID.BOARD_NULL);
       if (winner) {
-        highlightWinningPositions(DATA.board, PLAYERS);
+        highlightWinningPositions(DATA.board, PLAYERS, this);
         DATA.scores = updateScores(winner, PLAYERS, ID.BOARD_NULL, DATA.scores);
         writeScore(PLAYERS, DATA.scores);
         //Update game state
@@ -976,34 +978,34 @@ function createScoreGrid(areas) {
   let grid = createSVGGroup(undefined, CSS.LINES);
   grid.appendChild(
     createSVGLine(
-      areas.icons.b.topLeft.x,
-      areas.icons.b.topLeft.y + (areas.isVertical ? areas.refLength / 4 : 0),
-      areas.isVertical ? areas.symbols.b.topLeft.x : areas.symbols.b.bottomRight.x - (areas.refLength / 4),
-      areas.isVertical ? areas.symbols.b.bottomRight.y - (areas.refLength / 4) : areas.symbols.b.topLeft.y
+      HLP.round(areas.icons.b.topLeft.x, 2),
+      HLP.round(areas.icons.b.topLeft.y + (areas.isVertical ? areas.refLength / 4 : 0), 2),
+      HLP.round(areas.isVertical ? areas.symbols.b.topLeft.x : areas.symbols.b.bottomRight.x - (areas.refLength / 4), 2),
+      HLP.round(areas.isVertical ? areas.symbols.b.bottomRight.y - (areas.refLength / 4) : areas.symbols.b.topLeft.y, 2)
     )
   );
   grid.appendChild(
     createSVGLine(
-      areas.isVertical ? areas.symbols.b.topLeft.x : areas.symbols.b.bottomRight.x + (areas.refLength / 4),
-      areas.isVertical ? areas.symbols.b.bottomRight.y + (areas.refLength / 4) : areas.symbols.b.topLeft.y,
-      areas.isVertical ? areas.scores.draw.b.topLeft.x : areas.scores.draw.b.bottomRight.x - (areas.refLength / 4),
-      areas.isVertical ? areas.scores.draw.b.bottomRight.y - (areas.refLength / 4) : areas.scores.draw.b.topLeft.y
+      HLP.round(areas.isVertical ? areas.symbols.b.topLeft.x : areas.symbols.b.bottomRight.x + (areas.refLength / 4), 2),
+      HLP.round(areas.isVertical ? areas.symbols.b.bottomRight.y + (areas.refLength / 4) : areas.symbols.b.topLeft.y, 2),
+      HLP.round(areas.isVertical ? areas.scores.draw.b.topLeft.x : areas.scores.draw.b.bottomRight.x - (areas.refLength / 4), 2),
+      HLP.round(areas.isVertical ? areas.scores.draw.b.bottomRight.y - (areas.refLength / 4) : areas.scores.draw.b.topLeft.y, 2)
     )
   );
   grid.appendChild(
     createSVGLine(
-      areas.scores.lose.a.topLeft.x + (areas.isVertical ? (areas.refLength / 4) : 0),
-      areas.scores.lose.a.topLeft.y + (areas.isVertical ? 0 : (areas.refLength / 4)),
-      areas.isVertical ? areas.scores.lose.b.bottomRight.x - (areas.refLength / 4) : areas.scores.lose.b.topLeft.x,
-      areas.isVertical ? areas.scores.lose.b.topLeft.y : areas.scores.lose.b.bottomRight.y - (areas.refLength / 4)
+      HLP.round(areas.scores.lose.a.topLeft.x + (areas.isVertical ? (areas.refLength / 4) : 0), 2),
+      HLP.round(areas.scores.lose.a.topLeft.y + (areas.isVertical ? 0 : (areas.refLength / 4)), 2),
+      HLP.round(areas.isVertical ? areas.scores.lose.b.bottomRight.x - (areas.refLength / 4) : areas.scores.lose.b.topLeft.x, 2),
+      HLP.round(areas.isVertical ? areas.scores.lose.b.topLeft.y : areas.scores.lose.b.bottomRight.y - (areas.refLength / 4), 2)
     )
   );
   grid.appendChild(
     createSVGLine(
-      areas.scores.draw.a.topLeft.x + (areas.isVertical ? (areas.refLength / 4) : 0),
-      areas.scores.draw.a.topLeft.y + (areas.isVertical ? 0 : (areas.refLength / 4)),
-      areas.isVertical ? areas.scores.draw.b.bottomRight.x - (areas.refLength / 4) : areas.scores.draw.b.topLeft.x,
-      areas.isVertical ? areas.scores.draw.b.topLeft.y : areas.scores.draw.b.bottomRight.y - (areas.refLength / 4)
+      HLP.round(areas.scores.draw.a.topLeft.x + (areas.isVertical ? (areas.refLength / 4) : 0), 2),
+      HLP.round(areas.scores.draw.a.topLeft.y + (areas.isVertical ? 0 : (areas.refLength / 4)), 2),
+      HLP.round(areas.isVertical ? areas.scores.draw.b.bottomRight.x - (areas.refLength / 4) : areas.scores.draw.b.topLeft.x, 2),
+      HLP.round(areas.isVertical ? areas.scores.draw.b.topLeft.y : areas.scores.draw.b.bottomRight.y - (areas.refLength / 4), 2)
     )
   );
   return grid;
@@ -1029,8 +1031,8 @@ function createScoreValues(areas) {
 }
 
 function createScoreText(area, txt =  undefined, id = undefined) {
-  let x = area.topLeft.x + ((area.bottomRight.x - area.topLeft.x) / 2);
-  let y = area.topLeft.y + ((area.bottomRight.y - area.topLeft.y) / 2);
+  let x = HLP.round(area.topLeft.x + ((area.bottomRight.x - area.topLeft.x) / 2), 2);
+  let y = HLP.round(area.topLeft.y + ((area.bottomRight.y - area.topLeft.y) / 2), 2);
   let label = createSVGText(x, y, txt ? txt : area.text);
   if (id) {
     label.setAttribute('id', id);
@@ -1273,8 +1275,8 @@ function createHumanIcon(leftX, topY, rightX, bottomY, idRoot) {
   const xl = xc - R;
   const xr = xc + R;
   const yc = topY + r;
-  icon.appendChild(createSVGCircle(xc, yc, r)); //Head
-  const pathdef = 'M ' + xl + ' ' + bottomY + ' A ' + R + ' ' + R + ' 0 1 1 ' + xr + ' ' + bottomY;
+  icon.appendChild(createSVGCircle(HLP.round(xc, 2), HLP.round(yc, 2), HLP.round(r, 2))); //Head
+  const pathdef = 'M ' + HLP.round(xl, 2) + ' ' + HLP.round(bottomY, 2) + ' A ' + HLP.round(R, 2) + ' ' + HLP.round(R, 2) + ' 0 1 1 ' + HLP.round(xr, 2) + ' ' + HLP.round(bottomY, 2);
   icon.appendChild(createSVGPath(pathdef)); //Body
   icon.setAttribute('id', idRoot + SUFFIX.HUMAN);
   return icon;
@@ -1290,8 +1292,8 @@ function createCPUIcon(leftX, topY, rightX, bottomY, idRoot) {
   const xlb = xc - (1.25 * R);
   const xrb = xc + (1.25 * R);
   const ytb = topY + (2 * r);
-  icon.appendChild(createSVGRect(xlh, topY, 2 * r, 2 * r)); //Head
-  const pathdef = 'M ' + xlb + ' ' + bottomY + ' V ' + ytb + ' H ' + xrb + ' V ' + bottomY;
+  icon.appendChild(createSVGRect(HLP.round(xlh, 1), HLP.round(topY, 2), HLP.round(2 * r, 2), HLP.round(2 * r, 2))); //Head
+  const pathdef = 'M ' + HLP.round(xlb, 2) + ' ' + HLP.round(bottomY, 2) + ' V ' + HLP.round(ytb, 2) + ' H ' + HLP.round(xrb, 2) + ' V ' + HLP.round(bottomY, 2);
   icon.appendChild(createSVGPath(pathdef)); //Body
   icon.setAttribute('id', idRoot + SUFFIX.CPU);
   return icon;
@@ -1351,7 +1353,7 @@ function createResetIcon(leftX, topY, rightX, bottomY) {
 
 function createBaseWidget(leftX, topY, rightX, bottomY, cornerRadius) {
   let widget = createSVGGroup(undefined);
-  widget.appendChild(createSVGRect(leftX, topY, rightX - leftX, bottomY - topY, cornerRadius, cornerRadius))
+  widget.appendChild(createSVGRect(HLP.round(leftX, 2), HLP.round(topY, 2), HLP.round(rightX - leftX, 2), HLP.round(bottomY - topY, 2), HLP.round(cornerRadius, 2), HLP.round(cornerRadius, 2)))
   return widget;
 }
 
@@ -1368,24 +1370,24 @@ function createAbsigIcon(leftX, topY, rightX, bottomY) {
   let x3 = x1 + sideLength;
   let y1 = topY + paddingY;
   let y2 = y1 + triangleHeight;
-  icon.appendChild(createSVGTriangle(x1, y1, x2, y2, x3, y1));
+  icon.appendChild(createSVGTriangle(HLP.round(x1, 1), HLP.round(y1, 2), HLP.round(x2, 2), HLP.round(y2, 2), HLP.round(x3, 2), HLP.round(y1, 2)));
   //lower triangle
   let x4 = x1 + (sideLength / 6);
   let x5 = x3 - (sideLength / 6);
   let y3 = bottomY - paddingY;
   let y4 = y3 - triangleHeight;
-  let pathdef = 'M ' + x4 + ' ' + y3 + ' H ' + x1 + ' L ' + x2 + ' ' + y4 + ' L ' + x3 + ' ' + y3 + ' H ' + x5;
+  let pathdef = 'M ' + HLP.round(x4, 2) + ' ' + HLP.round(y3, 2) + ' H ' + HLP.round(x1, 2) + ' L ' + HLP.round(x2, 2) + ' ' + HLP.round(y4, 2) + ' L ' + HLP.round(x3, 2) + ' ' + HLP.round(y3, 2) + ' H ' + HLP.round(x5, 2);
   icon.appendChild(createSVGPath(pathdef));
   //outer circle
-  icon.appendChild(createSVGCircle(x2, ((bottomY - topY) / 2) + topY, (refLength / 2) * (1 - CONFIG.ABSIG_ICON_PADDING)));
+  icon.appendChild(createSVGCircle(HLP.round(x2, 2), HLP.round(((bottomY - topY) / 2) + topY, 2), HLP.round((refLength / 2) * (1 - CONFIG.ABSIG_ICON_PADDING), 2)));
   //inner dot
-  let dot = createSVGCircle(x2, ((bottomY - topY) / 2) + topY, (refLength / 2) * CONFIG.ABSIG_ICON_PADDING);
+  let dot = createSVGCircle(HLP.round(x2, 2), HLP.round(((bottomY - topY) / 2) + topY, 2), HLP.round((refLength / 2) * CONFIG.ABSIG_ICON_PADDING, 2));
   dot.setAttribute('fill', 'black')
   icon.appendChild(dot);
   //lower circle
-  icon.appendChild(createSVGCircle(x2, ((y3 - y4) / 2) + y4, (triangleHeight / 2)));
+  icon.appendChild(createSVGCircle(HLP.round(x2, 2), HLP.round(((y3 - y4) / 2) + y4, 2), HLP.round(triangleHeight / 2, 2)));
   //upper half-circle
-  pathdef = 'M ' + x1 + ' ' + y1 + ' A ' + (triangleHeight / 2) + ' ' + (triangleHeight / 2) + ' 0 0 0 ' + x3 + ' ' + y1;
+  pathdef = 'M ' + HLP.round(x1, 2) + ' ' + HLP.round(y1, 2) + ' A ' + HLP.round(triangleHeight / 2, 2) + ' ' + HLP.round(triangleHeight / 2, 2) + ' 0 0 0 ' + HLP.round(x3, 2) + ' ' + HLP.round(y1, 2);
   icon.appendChild(createSVGPath(pathdef));
   return icon;
 }
@@ -1406,6 +1408,21 @@ function applyEventListener(listener, positionCount) {
 function applyEventListenerBoardPositions(listener, positionCount) {
   [...Array(positionCount).keys()].forEach(position => {
     document.getElementById(ACTIONS.PUT_SYMBOL + position).addEventListener('click', listener);
+  });
+}
+
+function stripEventListener(listener, positionCount) {
+  document.getElementById(ID.CROSS + ACTIONS.PICK_SYMBOL).removeEventListener('click', listener); //X on the picker sceen
+  document.getElementById(ID.NOUGHT + ACTIONS.PICK_SYMBOL).removeEventListener('click', listener); //O on the picker sceen
+  Object.entries(CPU_BEHAVIOUR).forEach(([key, val]) => {
+    document.getElementById(ACTIONS.PICK_BEHAVIOUR + key).removeEventListener('click', listener); //CPU beahviour option
+  });
+  document.getElementById(ACTIONS.EXIT_GAME).removeEventListener('click', listener); //Exit game command
+  document.getElementById(ACTIONS.RESET_GAME).removeEventListener('click', listener); //Reset game command
+  document.getElementById(ID.VERSION).removeEventListener('click', listener); //Go to changelog on git
+  document.getElementById(ID.GIT).removeEventListener('click', listener); //Go to triglyph home page on git
+  [...Array(positionCount).keys()].forEach(position => {
+    document.getElementById(ACTIONS.PUT_SYMBOL + position).removeEventListener('click', listener);
   });
 }
 
@@ -1439,7 +1456,7 @@ function showCurrentPlayer(current, previous) {
   document.getElementById(previous + SUFFIX.CURRENT_PLAYER_HL).classList.add(CSS.HIDDEN);
 }
 
-function highlightWinningPositions(board, players) {
+function highlightWinningPositions(board, players, listener) {
   let boardSize = computeBoardSize(board);
   let boardState = undefined;
 
@@ -1473,7 +1490,14 @@ function highlightWinningPositions(board, players) {
   }
 
   if (boardState) {
-    boardState.forEach(index => document.getElementById(ACTIONS.PUT_SYMBOL + index).classList.replace(CSS.USED, CSS.WINNER));
+    board.forEach((position, idx) => {
+      if (boardState.includes(idx)) {
+        document.getElementById(ACTIONS.PUT_SYMBOL + idx).classList.replace(CSS.USED, CSS.WINNER);
+      } else {
+        document.getElementById(ACTIONS.PUT_SYMBOL + idx).classList.replace(CSS.FREE, CSS.USED);
+      }
+      document.getElementById(ACTIONS.PUT_SYMBOL + idx).removeEventListener('click', listener);
+    });
   }
 }
 
