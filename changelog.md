@@ -3,14 +3,9 @@
 - Create GITHub project
 - Publish project
 - Implement widgets
+- Disable empty board positions on victory
+- Remove event listeners on exit
+- Apply rounding to SVG elements
 
-# Open
-## Gameplay
-- Disable empty squares on victory
-
-## Code flow
-- Strip event listeners on exit?
-- Apply rounding
-
-## AI
-- Add a probabilistic AI?
+# Ideas
+- Additional AI?
