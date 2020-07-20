@@ -1,0 +1,134 @@
+:root {
+  --oxoLineWidth: 0.5%;
+}
+
+.oxo > .svg > .picker > .text {
+  font-size: 6em;
+}
+
+.oxo > .svg > .picker > .symbols {
+  stroke: black;
+  stroke-width: var(--oxoLineWidth);
+  stroke-linecap: round;
+  fill: none;
+}
+
+.oxo > .svg > .picker > .rects {
+  fill: transparent;
+  fill-opacity: 0.1;
+}
+
+.oxo > .svg > .picker > .rects:hover {
+  fill: green;
+}
+
+.oxo > .svg > .picker > .behave > .text {
+  font-size: 1em;
+}
+
+.oxo > .svg > .picker > .behave > .rects {
+  fill: transparent;
+  fill-opacity: 0.1;
+}
+
+.oxo > .svg > .picker > .behave > .rects:hover {
+  fill: green;
+}
+
+.oxo > .svg > .board > .lines {
+  stroke: grey;
+  stroke-width: var(--oxoLineWidth);
+  stroke-linecap: round;
+}
+
+.oxo > .svg > .board > .rects {
+  fill: transparent;
+  fill-opacity: 0.1;
+}
+
+.oxo > .svg > .board > .rects > .free:hover {
+  fill: green;
+}
+
+.oxo > .svg > .board > .rects > .used:hover {
+  fill: red;
+  fill-opacity: 0.5;
+}
+
+.oxo > .svg > .board > .rects > .winner {
+  fill: lightskyblue;
+  fill-opacity: 0.5;
+}
+
+.oxo > .svg > .board > .symbols {
+  fill: transparent;
+  stroke: black;
+  stroke-width: var(--oxoLineWidth);
+  stroke-linecap: square;
+}
+
+.oxo > .svg > .score > .rects {
+  fill: green;
+  fill-opacity: 0.1;
+  stroke: none;
+}
+
+.oxo > .svg > .score > .markercp {
+  fill: grey;
+  stroke: none;
+}
+
+.oxo > .svg > .score > .lines {
+  stroke-width: 0.1%;
+  stroke: lightsteelblue;
+}
+
+.oxo > .svg > .score > .text {
+  fill: black;
+  font-size: 1em;
+}
+
+.oxo > .svg > .score > .symbols {
+  stroke: black;
+  fill: transparent;
+  stroke-width: 1;
+}
+
+.oxo > .svg > .score > .icons {
+  fill: transparent;
+  stroke: black;
+  stroke-width: 1;
+}
+
+.oxo > .svg > .commands {
+  stroke: black;
+  stroke-width: 2;
+  fill: transparent;
+}
+
+.oxo > .svg > .commands > .icons:hover {
+  fill-opacity: 0.1;
+  fill: green;
+}
+
+.oxo > .svg > .widgets {
+  stroke: black;
+  stroke-width: 1;
+  fill: transparent;
+}
+
+.oxo > .svg > .widgets > .version > rect {
+  stroke: none;
+  fill: black;
+}
+
+.oxo > .svg > .widgets > .version > text {
+  stroke: none;
+  fill: whitesmoke;
+  font-size: 1em;
+}
+
+.oxo > .svg > .widgets > .git > rect {
+  stroke: none;
+  fill: #80b692;
+}
