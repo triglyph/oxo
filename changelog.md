@@ -5,11 +5,12 @@
 - Implement widgets
 
 # Open
-## Exit game
-- Strip event listeners?
+## Gameplay
+- Disable empty squares on victory
 
-## Rounding
-- Figure out where to apply rounding
+## Code flow
+- Strip event listeners on exit?
+- Apply rounding
 
 ## AI
 - Add a probabilistic AI?
