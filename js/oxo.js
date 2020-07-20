@@ -4,7 +4,8 @@ const VERSION = 'V3.0';
 const DEFAULT_EXIT_URL = 'https://www.google.com';
 const GAME_DATA = new WeakMap();
 const ID = Object.freeze({
-  OXO: 'oxo',
+  ROOT: HLP.uuidv4(),
+  OXO: HLP.uuidv4(),
   NOUGHT: HLP.uuidv4(),
   CROSS: HLP.uuidv4(),
   BOARD_NULL: HLP.uuidv4(),
@@ -49,6 +50,10 @@ const CONFIG = Object.freeze({
   MAX_DEPTH: 8
 });
 const CSS = Object.freeze({
+  ROOT: 'root',
+  OXO: 'oxo',
+  GRID: 'grid',
+  GRIDITEM: 'griditem',
   SVG: 'svg',
   PICKER: 'picker',
   BEHAVIOUR: 'behave',
@@ -1457,4 +1462,8 @@ function highlightWinningPositions(board, players) {
   }
 }
 
-const objOXO = new OXO(document.getElementById(ID.OXO));
+let rootElement = HLP.divfactory(CONFIG.ROOT, undefined, CSS.ROOT, CSS.GRID)
+document.body.appendChild(rootElement);
+let oxoContainer = HLP.divfactory(CONFIG.OXO, undefined, CSS.GRIDITEM, CSS.OXO);
+rootElement.appendChild(oxoContainer);
+const objOXO = new OXO(oxoContainer);
