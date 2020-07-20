@@ -4,6 +4,7 @@ const VERSION = 'V3.0';
 const DEFAULT_EXIT_URL = 'https://www.google.com';
 const GAME_DATA = new WeakMap();
 const ID = Object.freeze({
+  OXO: 'oxo',
   NOUGHT: HLP.uuidv4(),
   CROSS: HLP.uuidv4(),
   BOARD_NULL: HLP.uuidv4(),
@@ -1455,3 +1456,5 @@ function highlightWinningPositions(board, players) {
     boardState.forEach(index => document.getElementById(ACTIONS.PUT_SYMBOL + index).classList.replace(CSS.USED, CSS.WINNER));
   }
 }
+
+const objOXO = new OXO(document.getElementById(ID.ROOT));
