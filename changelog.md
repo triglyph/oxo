@@ -2,13 +2,9 @@
 ## 2020-07-20 V3.0
 - Create GITHub project
 - Publish project
+- Implement widgets
 
 # Open
-## Widgets
-- Give them ID's
-- Give them actions
-- Handle actions
-
 ## Exit game
 - Strip event listeners?
 
