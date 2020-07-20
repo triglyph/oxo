@@ -1457,4 +1457,4 @@ function highlightWinningPositions(board, players) {
   }
 }
 
-const objOXO = new OXO(document.getElementById(ID.ROOT));
+const objOXO = new OXO(document.getElementById(ID.OXO));
