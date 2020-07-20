@@ -1120,7 +1120,7 @@ function createWidgets(area) {
   //triglyph link to GIT
   let git = createGitWidget(widgetAreas.git, widgetAreas.widgetRadius);
   git.setAttribute('id', ID.GIT);
-  git.dataset[DATASET.ACTION] = ACTIONS.GOTO_CHANGE_LOG;
+  git.dataset[DATASET.ACTION] = ACTIONS.GOTO_GIT;
   widgets.appendChild(git);
   return widgets;
 }
