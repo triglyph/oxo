@@ -1,7 +1,6 @@
 import * as HLP from './helpers/helpers.js';
 
 const VERSION = 'V3.0';
-const DEFAULT_EXIT_URL = 'https://www.google.com';
 const GAME_DATA = new WeakMap();
 const ID = Object.freeze({
   ROOT: HLP.uuidv4(),
@@ -13,7 +12,9 @@ const ID = Object.freeze({
   BOARD: HLP.uuidv4(),
   SCORE: HLP.uuidv4(),
   COMMAND: HLP.uuidv4(),
-  WIDGET: HLP.uuidv4()
+  WIDGET: HLP.uuidv4(),
+  VERSION: HLP.uuidv4(),
+  GIT: HLP.uuidv4()
 });
 const PLAYERS = [ID.NOUGHT, ID.CROSS];
 const SUFFIX = Object.freeze({
@@ -91,6 +92,11 @@ const ACTIONS = Object.freeze({
   GOTO_GIT: HLP.uuidv4(),
   GOTO_CHANGE_LOG: HLP.uuidv4()
 });
+const URL = Object.freeze({
+  DEFAULT_EXIT: 'https://www.google.com',
+  CHANGE_LOG: 'https://github.com/triglyph/oxo/blob/master/changelog.md',
+  TRIGLYPH: 'https://triglyph.github.io'
+})
 
 export class OXO{
   constructor(hostDOMElement, boardSize=3, callbackOnExit=undefined) {
@@ -170,7 +176,7 @@ export class OXO{
         DATA.callbackOnExit();
       } else {
         //Redirect to a page
-        location.href = DEFAULT_EXIT_URL;
+        location.href = URL.DEFAULT_EXIT;
       }
     } else if (ACTION == ACTIONS.RESET_GAME) {
       if (!checkBoardState(DATA.board, PLAYERS, ID.BOARD_NULL)) {
@@ -216,6 +222,10 @@ export class OXO{
         //If current player is CPU, take CPU action
         checkCPUTurn(DATA.playerInfo, DATA.board);
       }
+    } else if (ACTION == ACTIONS.GOTO_CHANGE_LOG) {
+      window.open(URL.CHANGE_LOG);
+    } else if (ACTION == ACTIONS.GOTO_GIT) {
+      window.open(URL.TRIGLYPH);
     }
   }
 }
@@ -1103,9 +1113,15 @@ function createWidgets(area) {
   let widgets = createSVGGroup(ID.WIDGET, CSS.WIDGETS, CSS.HIDDEN);
   let widgetAreas = computeWidgetArea(area);
   //Version w/ changelog
-  widgets.appendChild(createVersionWidget(widgetAreas.version, widgetAreas.widgetRadius));
-  //Absig link to GIT
-  widgets.appendChild(createGitWidget(widgetAreas.git, widgetAreas.widgetRadius));
+  let ver = createVersionWidget(widgetAreas.version, widgetAreas.widgetRadius);
+  ver.setAttribute('id', ID.VERSION);
+  ver.dataset[DATASET.ACTION] = ACTIONS.GOTO_CHANGE_LOG;
+  widgets.appendChild(ver);
+  //triglyph link to GIT
+  let git = createGitWidget(widgetAreas.git, widgetAreas.widgetRadius);
+  git.setAttribute('id', ID.GIT);
+  git.dataset[DATASET.ACTION] = ACTIONS.GOTO_CHANGE_LOG;
+  widgets.appendChild(git);
   return widgets;
 }
 
@@ -1382,10 +1398,9 @@ function applyEventListener(listener, positionCount) {
   });
   document.getElementById(ACTIONS.EXIT_GAME).addEventListener('click', listener); //Exit game command
   document.getElementById(ACTIONS.RESET_GAME).addEventListener('click', listener); //Reset game command
-  //Version widget
-  //Git widget
-  //Board positions
-  applyEventListenerBoardPositions(listener, positionCount);
+  document.getElementById(ID.VERSION).addEventListener('click', listener); //Go to changelog on git
+  document.getElementById(ID.GIT).addEventListener('click', listener); //Go to triglyph home page on git
+  applyEventListenerBoardPositions(listener, positionCount); //Board positions
 }
 
 function applyEventListenerBoardPositions(listener, positionCount) {
